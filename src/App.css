@@ -1,0 +1,35 @@
+.App {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-logo {
+  height: 80px;
+}
+
+.App-container {
+  flex: 1;
+  overflow: scroll;
+}
+
+.App-header, .App-footer {
+  height: 80px;
+}
+
+.App-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.App-footer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.App-bubble-right {
+  background: lightblue;
+}
