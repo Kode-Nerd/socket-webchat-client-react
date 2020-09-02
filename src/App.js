@@ -70,7 +70,7 @@ function App() {
 
   useEffect(() => {
     const NODE_ENV = process.env.NODE_ENV;
-    const socketInstance = io(`${api[NODE_ENV].baseURL}`);
+    const socketInstance = io(`${api[NODE_ENV].baseURL}/socket`);
     
     setSocket(socketInstance);
     
