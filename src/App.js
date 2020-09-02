@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import api from './config/api';
 
 function App() {
   const [interactions, setInteractions] = useState([]);
@@ -68,7 +69,8 @@ function App() {
   }
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:3030');
+    const NODE_ENV = process.env.NODE_ENV;
+    const socketInstance = io(`${api[NODE_ENV].baseURL}`);
     
     setSocket(socketInstance);
     
@@ -92,7 +94,7 @@ function App() {
     <div className="App">
       <div className="App-header">
         <img src={logo} alt="logo" className="App-logo" />
-        <h1>React WebChat</h1>
+        <h1>{process.env.REACT_APP_WEBSITE_NAME}</h1>
       </div>
       <div id="app-container" className="App-container">
         <Container>
