@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import io from 'socket.io-client';
 import { Container, Row, Col, Card, InputGroup, FormControl, Button } from 'react-bootstrap';
 import * as _ from 'lodash';
@@ -25,36 +25,46 @@ function App() {
       return;
     }
 
-    typingOff();
+    forceTypeOff();
     
     socket.emit('message', text);
     setText('');
   }
 
   const typingOff = () => {
-    if (userTyping) {
-      setUserTyping(false);
-      socket.emit('typing', false);
+    if (!userTyping) {
+      return
     }
+    console.log("off", userTyping);
+    setUserTyping(false);
+    socket.emit('typing', false);
   }
+  const delayedTypingOff = useCallback(_.debounce(typingOff, 5000, { trailing: true }), [userTyping])
 
   const typingOn = () => {
-    if (!userTyping) {
-      setUserTyping(true);
-      socket.emit('typing', true);
+    if (userTyping) {
+      return
     }
+    console.log("on", userTyping);
+    setUserTyping(true);
+    socket.emit('typing', true);
   }
-
-  const delayedTypingOff = _.debounce(typingOff, 5000, { trailing: true }) 
-
-  const handleChange = (event) => {
-    typingOn();
-
-    delayedTypingOff();
+  
+  const handleChange = (event) => {    
+    if (!userTyping) {
+      typingOn();
+    } else {
+      delayedTypingOff();
+    }
     
     setText(event.target.value);
   }
-  
+
+  const forceTypeOff = () => {
+    typingOff();
+    delayedTypingOff.cancel();
+  }
+
   const scrollToEnd = () => {
     const id = interactions.length - 1;
     const el = document.getElementById('' + id);
@@ -89,6 +99,9 @@ function App() {
   useEffect(() => {
     scrollToEnd();
   }, [interactions.length, typing])
+  useEffect((old) => {
+    console.log("userTyping changed", userTyping);  
+  }, [userTyping])
 
   return (
     <div className="App">
@@ -168,7 +181,7 @@ function App() {
                 aria-describedby="basic-addon2"
                 value={text}
                 onChange={handleChange}
-                onBlur={typingOff}
+                onBlur={forceTypeOff}
               />
               <InputGroup.Append>
                 <Button onClick={sendMessage}>Send</Button>
