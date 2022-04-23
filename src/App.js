@@ -32,35 +32,36 @@ function App() {
   }
 
   const typingOff = () => {
-    if (!userTyping) {
-      return
-    }
-    console.log("off", userTyping);
+    // console.log("off", userTyping);
     setUserTyping(false);
     socket.emit('typing', false);
   }
-  const delayedTypingOff = useCallback(_.debounce(typingOff, 5000, { trailing: true }), [userTyping])
+  const delayedTypingOff = useCallback(_.debounce(typingOff, 5000, { trailing: true }), [socket])
 
   const typingOn = () => {
     if (userTyping) {
       return
     }
-    console.log("on", userTyping);
+    // console.log("on", userTyping);
     setUserTyping(true);
     socket.emit('typing', true);
   }
   
   const handleChange = (event) => {    
     if (!userTyping) {
+      // console.log("typing on");
       typingOn();
-    } else {
-      delayedTypingOff();
     }
+    // console.log("typing off");
+    delayedTypingOff();
     
     setText(event.target.value);
   }
 
   const forceTypeOff = () => {
+    if (!userTyping) {
+      return
+    }
     typingOff();
     delayedTypingOff.cancel();
   }
@@ -99,9 +100,6 @@ function App() {
   useEffect(() => {
     scrollToEnd();
   }, [interactions.length, typing])
-  useEffect((old) => {
-    console.log("userTyping changed", userTyping);  
-  }, [userTyping])
 
   return (
     <div className="App">
